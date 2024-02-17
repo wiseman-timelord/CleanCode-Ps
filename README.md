@@ -15,7 +15,7 @@ CleanCode-Ps is a utility designed for AI developers to optimize scripts, enhanc
 
 ### Features
 - **Script Identification**: Employs rules to ascertain the script type, supporting `.py`, `.ps1`, `.bat`, and `.mql5`, and now `.log`.
-- **Directory Management**: Logically utilizing, "Dirty", "Backup", "Clean"; cleaned scripts are, backed up and moved, relevantly.
+- **Directory Management**: Logically utilizing, "Dirty", "Backup", "Clean", "Reject"; relevantly, cleaned scripts are, backed up and moved, while unsupported files are rejected.
 - **Interactive UI**: Showcases a numbered list of detected scripts for effortless selection.
 - **Script Streamlining**: Excises specific comments and blank lines based on refined rules.
 - **Insightful Statistics**: Offers a detailed breakdown of the cleaning process, highlighting the number of lines and comments modified.
