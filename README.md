@@ -11,7 +11,7 @@ Beta. The conversion has been done and now it requires...
 ##
 
 ### Description
-CleanCode-Ps is a utility designed for AI developers to optimize scripts, enhancing readability and efficiency. Supporting Python .py, PowerShell .ps1, Batch .bat, and MQL5 .mql5 formats, it efficiently trims unnecessary comments and spaces, producing a streamlined script. Its user-friendly interface, highlighted with colored text and ASCII art, guarantees a smooth experience. The tool retains only essential comments and spaces, typically at the beginning of functions, classes, or sections. CleanCode-Ps ensures reduction in, errors and time consumption, from manually cleaning scripts. The tool prioritizes comments for Imports, Variables, Maps, and Functions. While tailored for AI developers, other programmers. 
+CleanCode-Ps is a utility designed for AI developers to optimize scripts, enhancing readability and efficiency. Supporting Python .py, PowerShell .ps1, Batch .bat, MQL5 .mql5, and now Logs .log, formats; it efficiently trims unnecessary comments and spaces, producing a streamlined script, additionally it now also removes Ansii codes from Logs. The tool retains only essential comments and spaces, typically at the beginning of functions, classes, or sections. CleanCode-Ps ensures reduction in, errors and time consumption, from manually cleaning scripts. The tool prioritizes comments for Imports, Variables, Maps, and Functions. While tailored for AI developers, other programmers. 
 
 ### Features
 - **Script Identification**: Employs rules to ascertain the script type, supporting `.py`, `.ps1`, `.bat`, and `.mql5`, and now `.log`.
