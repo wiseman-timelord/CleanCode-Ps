@@ -16,7 +16,6 @@ function script-InitializationCode {
 	PrintProgramTitle
 	Start-Sleep -Seconds 1
 	Set-ConfigureDisplay
-	CheckAndBackupFirstRunSettings
     Write-Host "Powershell Script Initialized...`n"
     Start-Sleep -Seconds 2
 }
