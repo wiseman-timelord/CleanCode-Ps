@@ -2,7 +2,7 @@
 
 # Print the program's title
 function PrintProgramTitle {
-    Write-Host "`n=========================( CleanCode )=========================`n"
+    Write-Host "`n=========================( CleanCode-Ps )=========================`n"
 }
 
 # Print a separator for the menu items

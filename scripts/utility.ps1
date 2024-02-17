@@ -71,9 +71,11 @@ function DetermineScriptType {
         '.py' { return 'Python' }
         '.ps1' { return 'PowerShell' }
         '.bat' { return 'Batch' }
+        '.mq5' { return 'MQL5' }
         default { return 'Unknown' }
     }
 }
+
 
 function DebugCleanLogs {
     param (
@@ -128,8 +130,12 @@ function SanitizeContentBasedOnType {
             if ($line.Trim().StartsWith("REM") -or $line.Trim().StartsWith("::")) { return $null } # Remove Batch comments
             else { return $line.Trim() }
         }
+        'MQL5' { # Implement sanitization for MQL5
+            if ($line.Trim().StartsWith("//")) { return $null } # Remove MQL5 comments
+            else { return $line.Trim() }
+        }
         default {
-            return $line.Trim()
+            return $line
         }
     }
 }
