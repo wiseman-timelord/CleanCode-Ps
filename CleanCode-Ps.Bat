@@ -53,7 +53,7 @@ echo.
 echo ------------------------------------------------------------------
 
 :: Variables
-set /p choice=Select, Options=1-3, Exit=X: 
+set /p choice=Select; Options=1-2, Exit=X: 
 if "%choice%"=="1" goto executeMain
 if "%choice%"=="2" goto checkScript
 if "%choice%"=="x" goto end
