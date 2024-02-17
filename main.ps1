@@ -8,7 +8,7 @@
 $global:backupPath = ".\Backup"
 $global:sourcePath = ".\Dirty"
 $global:cleanPath = ".\Clean"
-
+$global:rejectPath = ".\Reject"
 
 # Initialize program
 function script-InitializationCode {
@@ -16,9 +16,16 @@ function script-InitializationCode {
 	PrintProgramTitle
 	Start-Sleep -Seconds 1
 	Set-ConfigureDisplay
-    Write-Host "Powershell Script Initialized...`n"
+	Start-Sleep -Seconds 1
+    Run-OldFilesMaintenance
+	Start-Sleep -Seconds 1
+	Run-RemoveUnsupportedFiles
+	Start-Sleep -Seconds 1
+	Write-Host "Powershell Script Initialized...`n"
     Start-Sleep -Seconds 2
 }
+
+
 
 # Exit Program
 function script-FinalizationCode {

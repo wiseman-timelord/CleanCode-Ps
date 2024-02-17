@@ -36,6 +36,10 @@ if not exist ".\Backup\" (
     mkdir ".\Backup"
 	echo Created: .\Backup..
 )
+if not exist ".\Reject\" (
+    mkdir ".\Reject"
+	echo Created: .\Reject..
+)
 echo ..Directories Done.
 echo.
 timeout /t 1 /nobreak >nul

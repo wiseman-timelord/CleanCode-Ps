@@ -139,3 +139,55 @@ function SanitizeContentBasedOnType {
         }
     }
 }
+
+
+function Run-OldFilesMaintenance {
+    $foldersWithCutoffs = @{
+        '.\Backup' = (Get-Date).AddMonths(-6)
+        '.\Clean' = (Get-Date).AddMonths(-4)
+        '.\Reject' = (Get-Date).AddMonths(-2)
+    }
+    Write-Host "Checking Old Files.."
+    foreach ($folder in $foldersWithCutoffs.Keys) {
+        $cutoffDate = $foldersWithCutoffs[$folder]
+        $oldFiles = Get-ChildItem $folder -File | Where-Object { $_.LastWriteTime -lt $cutoffDate }
+
+        if ($oldFiles.Count -gt 0) {
+            Write-Host "Old Files in ${folder}:"
+            $oldFiles | ForEach-Object {
+                Write-Host "`t$($_.Name)"
+                Remove-Item $_.FullName -Force
+            }
+        } else {
+            Write-Host "$folder Is Acceptable"
+        }
+    }
+    Write-Host "Old Files Checked.`n"
+}
+
+
+
+function Run-RemoveUnsupportedFiles {
+    # Define allowed file extensions
+    $allowedExtensions = @('.ps1', '.py', '.bat', '.mq5', '.log')
+    $scriptFiles = Get-ChildItem $global:sourcePath -File
+    $unsupportedFiles = @()
+
+    Write-Host "Checking File Formats.."
+    foreach ($file in $scriptFiles) {
+        if ($file.Extension.ToLower() -notin $allowedExtensions) {
+            $unsupportedFiles += $file
+            $destination = Join-Path $global:rejectPath $file.Name
+            Move-Item $file.FullName -Destination $destination -Force
+        }
+    }
+    if ($unsupportedFiles.Count -gt 0) {
+        Write-Host "Rejected Files Moved:"
+        $unsupportedFiles | ForEach-Object {
+            Write-Host "`t$($_.Name)"
+        }
+    } else {
+        Write-Host "..No Unsupported Files.."
+    }
+    Write-Host "..File Formats Checked.`n"
+}

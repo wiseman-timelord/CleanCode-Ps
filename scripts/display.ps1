@@ -15,12 +15,10 @@ function Set-ConfigureDisplay {
     Write-Host "Display Configuration.."
     [Console]::ForegroundColor = [ConsoleColor]::White
     [Console]::BackgroundColor = [ConsoleColor]::DarkGray
-    Write-Host "..Restarting Display..`n"
-    Start-Sleep -Seconds 1
-    [Console]::Clear()
+	[Console]::Clear()
     PrintProgramTitle
-    Write-Host "..Display Configured.`n"
-    Start-Sleep -Seconds 1
+    Write-Host "Display Configuration.."
+	Write-Host "..Display Configured.`n"
 }
 
 function Display-PrimaryMenu {
