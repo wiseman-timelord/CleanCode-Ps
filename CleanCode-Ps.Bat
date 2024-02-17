@@ -69,9 +69,9 @@ echo =========================( CleanCode-Ps )=========================
 echo.
 timeout /t 1 /nobreak >nul
 echo Maintenenace Started..
-if exist ".\cache\Errors-Crash.Log" (
+if exist ".\Errors-Crash.Log" (
     echo Deleted: Errors-Crash.Log
-    del ".\cache\Errors-Crash.Log"
+    del ".\Errors-Crash.Log"
 )
 echo ..Maintenance Done.
 echo.
