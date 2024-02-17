@@ -42,7 +42,7 @@ Un-Edited From ScriptClean...
 ##
 
 ### Notes
-- To be Detailed
+- This program was converted from the Python version of the program "ScriptClean", "ScriptClean" was the first "Ok" program by Wiseman-Timelord.
 
 ##
 
