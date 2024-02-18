@@ -8,7 +8,7 @@ Cleaning Scripts..
 Processing: display.ps1
 Error Cleaning: Cannot bind argument to parameter 'Path' because it is an empty string.
 ```
-- It is still backing up logs when it is backing up scripts...
+- It is still backing up logs when it is backing up scripts, check opposite scenario also...
 ```
 Backing Up Scripts..
 Backed up, 4 Script files
