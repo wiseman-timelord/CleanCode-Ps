@@ -9,13 +9,12 @@ function BackupFiles {
         $files = $null
         switch ($FileType) {
             'Script' {
-                $files = Get-ChildItem ".\Dirty" -File | Where-Object { DetermineScriptType $_.Name -ne 'Unknown' }
+                $files = Get-ChildItem ".\Dirty" -File | Where-Object { $_.Extension -match '\.(ps1|py|bat|mq5)$' }
             }
             'Log' {
                 $files = Get-ChildItem ".\Dirty" -File | Where-Object { $_.Extension -eq '.log' }
             }
         }
-
         foreach ($file in $files) {
             $destination = Join-Path ".\Backup" $file.Name
             Copy-Item $file.FullName -Destination $destination -Force
@@ -25,6 +24,7 @@ function BackupFiles {
         Write-Host "Backup failed, $_"
     }
 }
+
 
 # Script type determination
 function DetermineScriptType {
@@ -55,8 +55,6 @@ function Get-FileStats {
     return $stats
 }
 
-
-
 # Reduction calculation
 function CalculateReduction {
     param (
@@ -74,7 +72,7 @@ function Run-OldFilesMaintenance {
         '.\Reject' = (Get-Date).AddMonths(-2)
     }
 
-    Write-Host "Checking, Old files.."
+    Write-Host "Checking Old files.."
     foreach ($folder in $foldersWithCutoffs.Keys) {
         $cutoffDate = $foldersWithCutoffs[$folder]
         $oldFiles = Get-ChildItem $folder -File | Where-Object { $_.LastWriteTime -lt $cutoffDate }
