@@ -66,7 +66,6 @@ Backed up, 3 Script files
 Cleaning Scripts..
 Processing: display.ps1
 State: Blanks=6, Comments=4, Total=70
-Errors Cleaned: 0
 After: Blanks=6, Comments=4, Total=70
 Reduction=0.00%
 
@@ -74,13 +73,11 @@ Bypassing Log: Errors-Crash.Log
 
 Processing: main.ps1
 State: Blanks=8, Comments=7, Total=46
-Errors Cleaned: 0
 After: Blanks=8, Comments=7, Total=46
 Reduction=0.00%
 
 Processing: utility.ps1
 State: Blanks=24, Comments=10, Total=193
-Errors Cleaned: 0
 After: Blanks=24, Comments=10, Total=193
 Reduction=0.00%
 
