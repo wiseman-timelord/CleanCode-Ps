@@ -8,12 +8,6 @@ Cleaning Scripts..
 Processing: display.ps1
 Error Cleaning: Cannot bind argument to parameter 'Path' because it is an empty string.
 ```
-- It is still backing up logs when it is backing up scripts, check opposite scenario also...
-```
-Backing Up Scripts..
-Backed up, 4 Script files
-..Scripts Backed Up.
-```
 <br> remaining work from ScriptClean...
 1) identification and processing of variables for `.Mq5` scripts.
 2) identification of "while" as main loop in ".Ps1" scripts.
