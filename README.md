@@ -2,8 +2,7 @@
 
 ### Status
 Alpha. The conversion has been done and now it requires...
-- Testing
-- Improvement
+- Some kind of issue with processing of scripts "Error Cleaning: Cannot bind argument to parameter 'Path' because it is an empty string."
 <br> remaining work from ScriptClean...
 1) identification and processing of variables for `.Mq5` scripts.
 2) identification of "while" as main loop in ".Ps1" scripts.
