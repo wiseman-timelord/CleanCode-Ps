@@ -2,7 +2,8 @@
 
 ### Status
 Alpha. The conversion has been done and now it requires...
-- Testing and bugfixing.
+- Its not actually cleaning the scripts.
+- Further, Testing and bugfixing.
 - remaining work from ScriptClean...
 1) identification and processing of variables for `.Mq5` scripts.
 2) identification of "while" as main loop in ".Ps1" scripts.
