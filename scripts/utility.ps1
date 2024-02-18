@@ -1,117 +1,170 @@
 # Script: utility.ps1
 
-# Backup scripts before processing
-function BackupScripts {
+# Backup before process
+function BackupFiles {
+    param (
+        [string]$FileType
+    )
     try {
-        $scriptFiles = Get-ChildItem $global:sourcePath -File
-        foreach ($file in $scriptFiles) {
+        $files = $null
+        switch ($FileType) {
+            'Script' {
+                $files = Get-ChildItem $global:sourcePath -File | Where-Object { DetermineScriptType $_.Name -ne 'Unknown' }
+            }
+            'Log' {
+                $files = Get-ChildItem $global:sourcePath -File | Where-Object { $_.Extension -eq '.log' }
+            }
+        }
+
+        foreach ($file in $files) {
             $destination = Join-Path $global:backupPath $file.Name
             Copy-Item $file.FullName -Destination $destination -Force
         }
-        Write-Host "$($scriptFiles.Count) script(s) backed up successfully."
+        Write-Host "Backed up, $($files.Count) $FileType files"
     } catch {
-        Write-Host "An error occurred during the backup process: $_"
+        Write-Host "Backup failed, $_"
     }
 }
 
-function CleanScripts {
+# Clean dirty scripts
+function CleanScriptFiles {
     try {
-        BackupScripts
-        $scriptFiles = Get-ChildItem $global:sourcePath -File
+        # Call to backup script files before cleaning
+        BackupFiles 'Script'
+
+        $scriptFiles = Get-ChildItem $global:sourcePath -File | Where-Object { DetermineScriptType $_.Name -ne 'Unknown' }
         if ($scriptFiles.Count -eq 0) {
-            Write-Host "No scripts found to process in the 'Dirty' directory."
-        } else {
-            foreach ($file in $scriptFiles) {
-                $scriptType = DetermineScriptType $file.Name
-                if ($scriptType -eq 'Unknown') {
-                    Write-Host "Unsupported Format: $($file.Name)"
-                    continue
-                }
-                Write-Host "Processing $($file.Name)..."
-                $cleanContent = @()
-                $content = Get-Content $file.FullName
-                foreach ($line in $content) {
-                    $sanitizedLine = SanitizeContentBasedOnType $scriptType $line
-                    if ($sanitizedLine -ne $null) {
-                        $cleanContent += $sanitizedLine
-                    }
-                }
-                $cleanFilePath = Join-Path $global:cleanPath $file.Name
-                Set-Content -Path $cleanFilePath -Value $cleanContent
-                Remove-Item $file.FullName -Force
-                Write-Host "Successfully processed and moved to 'Clean' directory."
-            }
+            Write-Host "No scripts, Dirty empty"
+            return
+        }
+
+        foreach ($file in $scriptFiles) {
+            $scriptType = DetermineScriptType $file.Name
+            Write-Host "Processing, $($file.Name)"
+
+            $preStats = Get-FileStats -FilePath $file.FullName -ScriptType $scriptType
+            Write-Host "$($file.Name), Pre stats: $($preStats.Blanks), $($preStats.Comments), $($preStats.Total)"
+
+            $cleanContent = ProcessFile -FilePath $file.FullName -ScriptType $scriptType
+
+            $postStats = Get-FileStats -Content $cleanContent -ScriptType $scriptType
+            $reduction = CalculateReduction -PreTotal $preStats.Total -PostTotal $postStats.Total
+            Write-Host "$($file.Name), Post stats: $($postStats.Blanks), $($postStats.Comments), $($postStats.Total)"
+            Write-Host "Reduction, $reduction%`n"
+
+            Start-Sleep -Seconds 1
         }
     } catch {
-        Write-Host "An error occurred during script processing: $_"
+        Write-Host "Processing failed, $_"
     }
 }
 
 
-
-# Initial checks and setup
-function InitializeCleanCodeEnvironment {
-    CheckAndCreateDirectories
-    # Any other initialization logic can be added here
-}
-
-function DebugCleanScripts {
-    # Clear the .\Clean directory
-    Get-ChildItem $global:cleanPath -File | Remove-Item -Force
-    Write-Host "Cleaned scripts directory has been cleared."
-}
-
-
-function DetermineScriptType {
+# Stats calculation
+function Get-FileStats {
     param (
-        [string]$filename
+        [string]$FilePath,
+        [string[]]$Content,
+        [string]$ScriptType
     )
-    $extension = [System.IO.Path]::GetExtension($filename).ToLower()
-    switch ($extension) {
-        '.py' { return 'Python' }
-        '.ps1' { return 'PowerShell' }
-        '.bat' { return 'Batch' }
-        '.mq5' { return 'MQL5' }
-        default { return 'Unknown' }
+    if ($null -ne $FilePath) {
+        $Content = Get-Content $FilePath
+    }
+    $stats = @{'Blanks' = 0; 'Comments' = 0; 'Total' = 0}
+    foreach ($line in $Content) {
+        $stats['Total']++
+        if (-not $line.Trim()) {
+            $stats['Blanks']++
+            continue
+        }
+        if (IsCommentLine -Line $line -ScriptType $ScriptType) {
+            $stats['Comments']++
+        }
+    }
+    return $stats
+}
+
+# Comment check
+function IsCommentLine {
+    param (
+        [string]$Line,
+        [string]$ScriptType
+    )
+    switch ($ScriptType) {
+        'Python' { return $Line.Trim().StartsWith("#") }
+        'PowerShell' { return $Line.Trim().StartsWith("#") }
+        'Batch' { return $Line.Trim().StartsWith("REM") -or $Line.Trim().StartsWith("::") }
+        'MQL5' { return $Line.Trim().StartsWith("//") }
+        default { return $false }
     }
 }
 
 
-function DebugCleanLogs {
+
+# Process file content
+function ProcessFile {
+    param (
+        [string]$FilePath,
+        [string]$ScriptType
+    )
+    $content = Get-Content -Path $FilePath
+    $cleanContent = $content | Where-Object { -not (IsCommentLine -Line $_ -ScriptType $ScriptType) -and $_.Trim() }
+    return $cleanContent
+}
+
+# Reduction calculation
+function CalculateReduction {
+    param (
+        [int]$PreTotal,
+        [int]$PostTotal
+    )
+    return "{0:N2}" -f ((($PreTotal - $PostTotal) / $PreTotal) * 100)
+}
+
+# Script type determination
+function DetermineScriptType {
+    param ([string]$filename)
+    switch ([System.IO.Path]::GetExtension($filename).ToLower()) {
+        '.py' { 'Python' }
+        '.ps1' { 'PowerShell' }
+        '.bat' { 'Batch' }
+        '.mq5' { 'MQL5' }
+        default { 'Unknown' }
+    }
+}
+
+# Clean log files
+function CleanLogFiles {
     param (
         [string]$LogDirectory = ".\Dirty"
     )
 
-    # Find all log files in the directory
+    # Call to backup log files before cleaning
+    BackupFiles 'Log'
+
     $logFiles = Get-ChildItem -Path $LogDirectory -Filter "*.log"
-
     if ($logFiles.Count -eq 0) {
-        Write-Host "No log files found to clean in the '$LogDirectory' directory."
+        Write-Host "Logs not found, Directory empty"
+        return
     }
-    else {
-        foreach ($logFile in $logFiles) {
+
+    foreach ($logFile in $logFiles) {
+        try {
             $logPath = $logFile.FullName
-            try {
-                # Read the log file content
-                $content = Get-Content -Path $logPath -Raw
-
-                # Replace ANSI escape sequences with nothing
-                $cleanedContent = $content -replace '\x1b\[\d*;?\d*;?\d*m', ''
-
-                # Overwrite the original log file with the cleaned content
-                Set-Content -Path $logPath -Value $cleanedContent
-
-                Write-Host "Cleaned log file: $($logFile.Name)"
-            }
-            catch {
-                Write-Host "Error cleaning log file: $($logFile.Name): $_"
-            }
+            $content = Get-Content -Path $logPath -Raw
+            $cleanedContent = $content -replace '\x1b\[\d*;?\d*;?\d*m', ''
+            Set-Content -Path $logPath -Value $cleanedContent
+            Write-Host "Cleaned, $($logFile.Name)"
+        }
+        catch {
+            Write-Host "Clean failed, $($logFile.Name)"
         }
     }
     Start-Sleep -Seconds 2
 }
 
 
+# Sanitize based on type
 function SanitizeContentBasedOnType {
     param (
         [string]$scriptType,
@@ -119,75 +172,69 @@ function SanitizeContentBasedOnType {
     )
     switch ($scriptType) {
         'Python' {
-            if ($line.Trim().StartsWith("#")) { return $null } # Remove Python comments
+            if ($line.Trim().StartsWith("#")) { return $null }
             else { return $line.Trim() }
         }
         'PowerShell' {
-            if ($line.Trim().StartsWith("#")) { return $null } # Remove PowerShell comments
+            if ($line.Trim().StartsWith("#")) { return $null }
             else { return $line.Trim() }
         }
         'Batch' {
-            if ($line.Trim().StartsWith("REM") -or $line.Trim().StartsWith("::")) { return $null } # Remove Batch comments
+            if ($line.Trim().StartsWith("REM") -or $line.Trim().StartsWith("::")) { return $null }
             else { return $line.Trim() }
         }
-        'MQL5' { # Implement sanitization for MQL5
-            if ($line.Trim().StartsWith("//")) { return $null } # Remove MQL5 comments
+        'MQL5' {
+            if ($line.Trim().StartsWith("//")) { return $null }
             else { return $line.Trim() }
         }
         default {
-            return $line
+            return $line.Trim()
         }
     }
 }
 
 
+# Old files maintenance
 function Run-OldFilesMaintenance {
     $foldersWithCutoffs = @{
         '.\Backup' = (Get-Date).AddMonths(-6)
         '.\Clean' = (Get-Date).AddMonths(-4)
         '.\Reject' = (Get-Date).AddMonths(-2)
     }
-    Write-Host "Checking Old Files.."
+
+    Write-Host "Checking, Old files.."
     foreach ($folder in $foldersWithCutoffs.Keys) {
         $cutoffDate = $foldersWithCutoffs[$folder]
         $oldFiles = Get-ChildItem $folder -File | Where-Object { $_.LastWriteTime -lt $cutoffDate }
 
         if ($oldFiles.Count -gt 0) {
-            Write-Host "Old Files in ${folder}:"
-            $oldFiles | ForEach-Object {
-                Write-Host "`t$($_.Name)"
-                Remove-Item $_.FullName -Force
+            Write-Host "Found old, ${folder}"
+            foreach ($file in $oldFiles) {
+                Write-Host "Removing, $($file.Name)"
+                Remove-Item $file.FullName -Force
             }
         } else {
-            Write-Host "$folder Is Acceptable"
+            Write-Host "All clear, $folder"
         }
     }
-    Write-Host "Old Files Checked.`n"
+    Write-Host "..Maintenance done.`n"
 }
 
-
-
+# Unsupported files handler
 function Run-RemoveUnsupportedFiles {
-    # Define allowed file extensions
     $allowedExtensions = @('.ps1', '.py', '.bat', '.mq5', '.log')
     $scriptFiles = Get-ChildItem $global:sourcePath -File
-    $unsupportedFiles = @()
-
-    Write-Host "Checking File Formats.."
-    foreach ($file in $scriptFiles) {
-        if ($file.Extension.ToLower() -notin $allowedExtensions) {
-            $unsupportedFiles += $file
+    $unsupportedFiles = $scriptFiles | Where-Object { $_.Extension.ToLower() -notin $allowedExtensions }
+    Write-Host "Checking .\Dirty Folder.."
+    if ($unsupportedFiles.Count -gt 0) {
+        Write-Host "..Unsupported Scripts!"
+        foreach ($file in $unsupportedFiles) {
             $destination = Join-Path $global:rejectPath $file.Name
             Move-Item $file.FullName -Destination $destination -Force
-        }
-    }
-    if ($unsupportedFiles.Count -gt 0) {
-        Write-Host "Rejected Files Moved:"
-        $unsupportedFiles | ForEach-Object {
-            Write-Host "`t$($_.Name)"
+            Write-Host "Rejected: $($file.Name)"
         }
     } else {
-        Write-Host "..No Unsupported Files.."
+        Write-Host "..All scripts supported."
     }
-    Write-Host "..File Formats Checked.`n"
+	Write-Host ""
 }

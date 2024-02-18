@@ -25,46 +25,38 @@ function Display-PrimaryMenu {
     do {
         Clear-Host
         PrintProgramTitle
-        Write-Host "`n`n`n`n`n`n`n"
-        Write-Host "                   1. Process Scripts`n"
-        Write-Host "                   2. Debug/Clean Scripts`n"
-        Write-Host "                   3. Debug/Clean Logs"
-        Write-Host "`n`n`n`n`n`n`n"
+        Write-Host "`n`n`n`n`n`n`n`n`n`n"
+        Write-Host "                       1. Process Scripts,`n"
+        Write-Host "                       2. Process Logs."
+        Write-Host "`n`n`n`n`n`n`n`n`n`n"
         PrintProgramSeparator
-        $choice = Read-Host "Select, Options = 1-3, Exit = X"
-        HandleMenuChoice $choice
+        $choice = Read-Host "Select; Options = 1-2, Refresh = R, Exit = X"
+
+        switch ($choice) {
+            "r" {
+                Write-Host "Refreshing Display..."
+                Start-Sleep -Seconds 2
+            }
+            "1" {
+                Write-Host "Processing Scripts..."
+                CleanScriptFiles
+                Start-Sleep -Seconds 2
+            }
+            "2" {
+                Write-Host "Processing Logs..."
+                CleanLogFiles
+                Start-Sleep -Seconds 2
+            }
+            "x" {
+                Write-Host "Exit Initiated..."
+                Start-Sleep -Seconds 2
+				$exitRequested = $true
+                break
+            }
+            default {
+                Write-Host "Invalid option, please try again."
+                Start-Sleep -Seconds 2
+            }
+        }
     } while ($choice -ne 'X' -and $choice -ne '3')
 }
-
-function HandleMenuChoice {
-    param (
-        [string]$choice
-    )
-    switch ($choice) {
-        "1" {
-            Write-Host "Processing Scripts..."
-            CleanScripts
-            Start-Sleep -Seconds 2
-        }
-        "2" {
-            Write-Host "Debugging/Cleaning Scripts..."
-            DebugCleanScripts
-            Start-Sleep -Seconds 2
-        }
-        "3" {
-            Write-Host "Debugging/Cleaning Logs..."
-            DebugCleanLogs
-            Start-Sleep -Seconds 2
-        }
-        "X" {
-            Write-Host "Exiting..."
-            Start-Sleep -Seconds 2
-            exit
-        }
-        default {
-            Write-Host "Invalid option, please try again."
-            Start-Sleep -Seconds 2
-        }
-    }
-}
-

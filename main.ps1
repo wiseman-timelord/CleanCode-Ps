@@ -33,6 +33,7 @@ function script-FinalizationCode {
 	PrintProgramTitle
     Write-Host "`n....Powershell Script Exiting.`n"
     Start-Sleep -Seconds 2
+	exit
 }
 
 # Main loop

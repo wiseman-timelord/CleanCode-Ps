@@ -3,17 +3,13 @@ REM Script: CleanCode-Ps.Bat
 @echo off
 
 :: Initialization
-mode con cols=66 lines=32
-color 80
-title CleanCode-Ps
 cd /d "%~dp0"
 echo.
 echo =========================( CleanCode-Ps )=========================
 echo.
-timeout /t 1 /nobreak >nul
-echo Maintenenace Started..
-echo ..Maintenance Done.
-echo.
+mode con cols=66 lines=32
+color 80
+title CleanCode-Ps
 timeout /t 1 /nobreak >nul
 echo Launcher Initialized...
 echo.
