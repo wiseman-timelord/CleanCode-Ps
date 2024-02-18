@@ -3,12 +3,12 @@
 # Import external scripts
 . .\scripts\display.ps1
 . .\scripts\utility.ps1
+. .\scripts\cleaner.ps1
 
 # Global variables
-$global:backupPath = ".\Backup"
-$global:sourcePath = ".\Dirty"
-$global:cleanPath = ".\Clean"
-$global:rejectPath = ".\Reject"
+$global:FilePath_c2l = ""
+$global:ScriptType_x6s = ""
+$global:CurrentContent_o4s = ""
 
 # Initialize program
 function script-InitializationCode {
@@ -24,8 +24,6 @@ function script-InitializationCode {
 	Write-Host "Powershell Script Initialized...`n"
     Start-Sleep -Seconds 2
 }
-
-
 
 # Exit Program
 function script-FinalizationCode {
