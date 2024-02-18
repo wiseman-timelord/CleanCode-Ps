@@ -26,9 +26,70 @@ CleanCode-Ps is a utility designed for AI developers to optimize scripts, enhanc
 - **Looping Interface**: Enables continuous cleaning operations with options to re-detect, clean anew, or gracefully exit.
 
 ### Output
-- To be done
+- The Main Menu...
 ```
-To be done..
+
+=========================( CleanCode-Ps )=========================
+
+
+
+
+
+
+
+
+
+
+
+
+                       1. Process Scripts,
+
+                       2. Process Logs.
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------------
+Select; Options = 1-2, Refresh = R, Exit = X:
+
+```
+- Processing scripts (Alpha)..
+```
+=========================( CleanCode-Ps )=========================
+
+Backing Up Scripts..
+Backed up, 3 Script files
+..Scripts Backed Up.
+
+Cleaning Scripts..
+Processing: display.ps1
+State: Blanks=6, Comments=4, Total=70
+Errors Cleaned: 0
+After: Blanks=6, Comments=4, Total=70
+Reduction=0.00%
+
+Skipping unsupported file: Errors-Crash.Log
+Processing: main.ps1
+State: Blanks=8, Comments=7, Total=46
+Errors Cleaned: 0
+After: Blanks=8, Comments=7, Total=46
+Reduction=0.00%
+
+Processing: utility.ps1
+State: Blanks=24, Comments=10, Total=193
+Errors Cleaned: 0
+After: Blanks=24, Comments=10, Total=193
+Reduction=0.00%
+
+..Scripts Cleaned.
+
 ```
 ##
 
