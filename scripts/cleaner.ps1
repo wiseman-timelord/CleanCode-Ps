@@ -15,28 +15,35 @@ function CleanScriptFiles {
         }
         Write-Host "Cleaning Scripts.."
         foreach ($file in $scriptFiles) {
+            $global:FilePath_c2l = $file.FullName
             $scriptType = DetermineScriptType $file.Name
+            # Ensure the script type is one of the supported types before processing
+            if ($scriptType -eq 'Unknown') {
+                Write-Host "Bypassing Log: $($file.Name)`n"
+                continue
+            }
             Write-Host "Processing: $($file.Name)"
 
-            $preStats = Get-FileStats -FilePath $file.FullName -ScriptType $scriptType
+            $preStats = Get-FileStats
             Write-Host "State: Blanks=$($preStats.Blanks), Comments=$($preStats.Comments), Total=$($preStats.Total)"
 
-            $cleanContent = ProcessFile -FilePath $file.FullName -ScriptType $scriptType
+            $cleanContent = ProcessFile
 
-            $postStats = Get-FileStats -Content $cleanContent -ScriptType $scriptType
+            $postStats = Get-FileStats
             $reduction = CalculateReduction -PreTotal $preStats.Total -PostTotal $postStats.Total
             Write-Host "After: Blanks=$($postStats.Blanks), Comments=$($postStats.Comments), Total=$($postStats.Total)"
             Write-Host "Reduction=$reduction%`n"
 
             Start-Sleep -Seconds 1
         }
-        Write-Host "..Scripts Cleaned."		
+        Write-Host "..Scripts Cleaned."      
     } catch {
         Write-Host "Error Cleaning: $_"
     } finally {
         Start-Sleep -Seconds 2
     }
 }
+
 
 # Clean log files
 function CleanLogFiles {
@@ -46,19 +53,15 @@ function CleanLogFiles {
     Clear-Host
     PrintProgramTitle
     try {
-
-
         Write-Host "Backing Up Logs.."
         BackupFiles 'Log'
         Write-Host "..Logs Backed Up.`n"
 		Start-Sleep -Seconds 1
-		
         $logFiles = Get-ChildItem -Path $LogDirectory -Filter "*.log"
         if ($logFiles.Count -eq 0) {
             Write-Host "No Logs In .\Dirty"
             return
         }
-		
         Write-Host "Cleaning Logs.."
         foreach ($logFile in $logFiles) {
             $logPath = $logFile.FullName
@@ -76,7 +79,6 @@ function CleanLogFiles {
         Start-Sleep -Seconds 2
     }
 }
-
 
 # Sanitize based on type
 function SanitizeContentBasedOnType {
@@ -107,7 +109,6 @@ function SanitizeContentBasedOnType {
     }
 }
 
-
 # Comment check
 function IsCommentLine {
     param (
@@ -123,38 +124,20 @@ function IsCommentLine {
     }
 }
 
-
-
 # Process file content
-# Process file content and count error indicators
 function ProcessFile {
-    param (
-        [string]$FilePath
-    )
-    $Content = Get-Content -Path $FilePath
+    $Content = Get-Content -Path $global:FilePath_c2l
     $ErrorCount = 0
     $CleanedContent = @()
-
     foreach ($Line in $Content) {
-        # Check if line is a comment or should be trimmed and not added to cleaned content
         if (-not (IsCommentLine -Line $Line) -and $Line.Trim()) {
-            # Add non-comment, non-empty lines to cleaned content
             $CleanedContent += $Line.Trim()
         }
-
-        # Check for lines starting with "Line" indicating an error
         if ($Line.Trim().StartsWith("Line")) {
             $ErrorCount++
         }
     }
-
-    # Optionally, save the cleaned content back to a file or process further
-    # Set-Content -Path $FilePath -Value $CleanedContent
-
-    # Return or report the error count
     Write-Host "Errors Cleaned: $ErrorCount"
-
-    # If you need to use the cleaned content and error count outside this function, consider returning a custom object
     return [PSCustomObject]@{
         CleanedContent = $CleanedContent
         ErrorCount = $ErrorCount

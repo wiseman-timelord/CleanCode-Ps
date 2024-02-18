@@ -29,13 +29,15 @@ function BackupFiles {
 # Script type determination
 function DetermineScriptType {
     param ([string]$filename)
-    switch ([System.IO.Path]::GetExtension($filename).ToLower()) {
+    $scriptType = switch ([System.IO.Path]::GetExtension($filename).ToLower()) {
         '.py' { 'Python' }
         '.ps1' { 'PowerShell' }
         '.bat' { 'Batch' }
         '.mq5' { 'MQL5' }
         default { 'Unknown' }
     }
+    $global:ScriptType_x6s = $scriptType
+    return $scriptType
 }
 
 # Stats calculation
