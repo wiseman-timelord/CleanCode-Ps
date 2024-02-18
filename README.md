@@ -75,7 +75,8 @@ Errors Cleaned: 0
 After: Blanks=6, Comments=4, Total=70
 Reduction=0.00%
 
-Skipping unsupported file: Errors-Crash.Log
+Bypassing Log: Errors-Crash.Log
+
 Processing: main.ps1
 State: Blanks=8, Comments=7, Total=46
 Errors Cleaned: 0
