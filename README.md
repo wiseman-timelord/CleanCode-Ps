@@ -5,8 +5,8 @@ Alpha. The conversion has been done, and most elements are working...
 - it is not actually cleaning the scripts/logs. Check original scripts for, LogClean and ScriptClean, and re-implement cleaning logic as required.
 - Further, Testing and bugfixing.
 - remaining work from ScriptClean...
-1) identification and processing of variables for `.Mq5` scripts.
-2) identification of "while" as main loop in ".Ps1" scripts.
+1) identification and processing of variables for `.Mq5` scripts (possibly implemented now).
+2) identification of Entry Point near bottom of script.
 
 ##
 
