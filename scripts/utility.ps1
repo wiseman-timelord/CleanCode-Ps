@@ -5,7 +5,7 @@ function BackupFiles {
     param (
         [string]$FileType
     )
-    try {
+	try {
         $files = $null
         switch ($FileType) {
             'Script' {
@@ -17,9 +17,8 @@ function BackupFiles {
         }
         foreach ($file in $files) {
             $destination = Join-Path ".\Backup" $file.Name
-            Copy-Item $file.FullName -Destination $destination -Force
+            [System.IO.File]::Copy($file.FullName, $destination, $true)
         }
-        Set-SilentConfigureDisplay
 		Write-Host "Backed Up: $($files.Count) $($FileType)s"
     } catch {
         Write-Host "Backup failed, $_"

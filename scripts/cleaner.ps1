@@ -1,7 +1,6 @@
 # Script: cleaner.ps1
 
 # Clean dirty scripts
-# Clean dirty scripts
 function CleanScriptFiles {
     Clear-Host
     PrintProgramTitle
@@ -45,7 +44,10 @@ function CleanScriptFiles {
     } catch {
         Write-Host "Error Cleaning: $_"
     } finally {
-        Start-Sleep -Seconds 2
+		Write-Host ""
+		PrintProgramSeparator
+		Write-Host "Returning To Menu...`n"
+        Start-Sleep -Seconds 3
     }
 }
 
@@ -62,26 +64,34 @@ function CleanLogFiles {
         Write-Host "Backing Up Logs.."
         BackupFiles 'Log'
         Write-Host "..Logs Backed Up.`n"
-		Start-Sleep -Seconds 1
+        Start-Sleep -Seconds 1
         $logFiles = Get-ChildItem -Path $LogDirectory -Filter "*.log"
         if ($logFiles.Count -eq 0) {
             Write-Host "No Logs In .\Dirty"
             return
         }
-        Write-Host "Cleaning Logs.."
+        Write-Host "Cleaning Logs..`n"
         foreach ($logFile in $logFiles) {
+            Write-Host "Processing: $($logFile.Name)"
             $logPath = $logFile.FullName
             $content = Get-Content -Path $logPath -Raw
             # Replace escape sequences for colors and styles in logs
             $cleanedContent = $content -replace '\x1b\[\d*;?\d*;?\d*m', ''
             Set-Content -Path $logPath -Value $cleanedContent
-            Write-Host "Cleaned: $($logFile.Name)"
-			Start-Sleep -Seconds 1
+            Write-Host "Cleaned: $($logFile.Name)`n"
+            Start-Sleep -Seconds 1
+
+            # Move the cleaned file to ".\Clean" directory
+            $cleanDestination = Join-Path ".\Clean" $logFile.Name
+            Move-Item $logPath -Destination $cleanDestination -Force
         }
         Write-Host "..Logs Cleaned."
     } catch {
         Write-Host "Error Cleaning: $_"
     } finally {
+        Write-Host ""
+		PrintProgramSeparator
+        Write-Host "Returning To Menu...`n"
         Start-Sleep -Seconds 2
     }
 }
