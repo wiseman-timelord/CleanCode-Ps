@@ -61,28 +61,30 @@ Select; Options = 1-2, Refresh = R, Exit = X:
 =========================( CleanCode-Ps )=========================
 
 Backing Up Scripts..
-Backed up, 3 Script files
+Backed Up: 3 Scripts
 ..Scripts Backed Up.
 
-Cleaning Scripts..
+Cleaning Scripts...
+
 Processing: display.ps1
-State: Blanks=6, Comments=4, Total=70
-After: Blanks=6, Comments=4, Total=70
-Reduction=0.00%
+State: Blanks=6, Comments=4, Lines=70
+After: Blanks=6, Comments=4, Lines=70
+Total Reduction=0.00%
 
 Bypassing Log: Errors-Crash.Log
 
 Processing: main.ps1
-State: Blanks=8, Comments=7, Total=46
-After: Blanks=8, Comments=7, Total=46
-Reduction=0.00%
+State: Blanks=8, Comments=7, Lines=46
+After: Blanks=8, Comments=7, Lines=46
+Total Reduction=0.00%
 
 Processing: utility.ps1
-State: Blanks=24, Comments=10, Total=193
-After: Blanks=24, Comments=10, Total=193
-Reduction=0.00%
+State: Blanks=24, Comments=10, Lines=193
+After: Blanks=24, Comments=10, Lines=193
+Total Reduction=0.00%
 
-..Scripts Cleaned.
+...Scripts Cleaned.
+
 
 ```
 ##
