@@ -24,7 +24,6 @@ CleanCode-Ps is a utility designed for AI developers to optimize scripts, enhanc
 ### Output
 - The Main Menu...
 ```
-
 =========================( CleanCode-Ps )=========================
 
 
@@ -37,11 +36,11 @@ CleanCode-Ps is a utility designed for AI developers to optimize scripts, enhanc
 
 
 
-
                        1. Process Scripts,
+                            (3 Found)
 
                        2. Process Logs.
-
+                            (1 Found)
 
 
 
