@@ -21,22 +21,35 @@ function Set-ConfigureDisplay {
 	Write-Host "..Display Configured.`n"
 }
 
+# Sets the window title, size, and console properties for display configuration
+function Set-SilentConfigureDisplay {
+    [Console]::ForegroundColor = [ConsoleColor]::White
+    [Console]::BackgroundColor = [ConsoleColor]::DarkGray
+}
+
 function Display-PrimaryMenu {
     do {
         Clear-Host
         PrintProgramTitle
-        Write-Host "`n`n`n`n`n`n`n`n`n`n"
-        Write-Host "                       1. Process Scripts,`n"
+
+        # Count scripts and logs in .\Dirty
+        $scriptExtensions = @('.ps1', '.py', '.bat', '.mq5')
+        $logExtension = '.log'
+        $scriptFiles = Get-ChildItem ".\Dirty" -File | Where-Object { $_.Extension -in $scriptExtensions }
+        $logFiles = Get-ChildItem ".\Dirty" -File | Where-Object { $_.Extension -eq $logExtension }
+        $scriptCount = $scriptFiles.Count
+        $logCount = $logFiles.Count
+
+        Write-Host "`n`n`n`n`n`n`n`n`n"
+        Write-Host "                       1. Process Scripts,"
+        Write-Host "                            ($scriptCount Found)"`n
         Write-Host "                       2. Process Logs."
-        Write-Host "`n`n`n`n`n`n`n`n`n`n"
+        Write-Host "                            ($logCount Found)"
+        Write-Host "`n`n`n`n`n`n`n`n`n"
         PrintProgramSeparator
         $choice = Read-Host "Select; Options = 1-2, Refresh = R, Exit = X"
 
         switch ($choice) {
-            "r" {
-                Write-Host "Refreshing Display..."
-                Start-Sleep -Seconds 2
-            }
             "1" {
                 Write-Host "Processing Scripts..."
                 CleanScriptFiles
@@ -47,10 +60,14 @@ function Display-PrimaryMenu {
                 CleanLogFiles
                 Start-Sleep -Seconds 2
             }
+			"r" {
+                Write-Host "Refreshing Display..."
+                Start-Sleep -Seconds 2
+            }
             "x" {
                 Write-Host "Exit Initiated..."
                 Start-Sleep -Seconds 2
-				$exitRequested = $true
+                $exitRequested = $true
                 break
             }
             default {
@@ -60,3 +77,4 @@ function Display-PrimaryMenu {
         }
     } while ($choice -ne 'X' -and $choice -ne '3')
 }
+

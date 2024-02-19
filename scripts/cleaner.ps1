@@ -1,6 +1,7 @@
 # Script: cleaner.ps1
 
 # Clean dirty scripts
+# Clean dirty scripts
 function CleanScriptFiles {
     Clear-Host
     PrintProgramTitle
@@ -13,11 +14,10 @@ function CleanScriptFiles {
             Write-Host "No Scripts In .\Dirty"
             return
         }
-        Write-Host "Cleaning Scripts.."
+        Write-Host "Cleaning Scripts...`n"
         foreach ($file in $scriptFiles) {
             $global:FilePath_c2l = $file.FullName
             $scriptType = DetermineScriptType $file.Name
-            # Ensure the script type is one of the supported types before processing
             if ($scriptType -eq 'Unknown') {
                 Write-Host "Bypassing Log: $($file.Name)`n"
                 continue
@@ -25,24 +25,30 @@ function CleanScriptFiles {
             Write-Host "Processing: $($file.Name)"
 
             $preStats = Get-FileStats
-            Write-Host "State: Blanks=$($preStats.Blanks), Comments=$($preStats.Comments), Total=$($preStats.Total)"
-
+            Write-Host "State: Blanks=$($preStats.Blanks), Comments=$($preStats.Comments), Lines=$($preStats.Total)"
+			
+            # Assuming ProcessFile function modifies the file in-place
             $cleanContent = ProcessFile
 
             $postStats = Get-FileStats
             $reduction = CalculateReduction -PreTotal $preStats.Total -PostTotal $postStats.Total
-            Write-Host "After: Blanks=$($postStats.Blanks), Comments=$($postStats.Comments), Total=$($postStats.Total)"
-            Write-Host "Reduction=$reduction%`n"
+            Write-Host "After: Blanks=$($postStats.Blanks), Comments=$($postStats.Comments), Lines=$($postStats.Total)"
+            Write-Host "Total Reduction=$reduction%`n"
 
+            # Move the cleaned file to ".\Clean" directory
+            $cleanDestination = Join-Path ".\Clean" $file.Name
+            Move-Item $file.FullName -Destination $cleanDestination -Force
+            
             Start-Sleep -Seconds 1
         }
-        Write-Host "..Scripts Cleaned."      
+        Write-Host "...Scripts Cleaned."      
     } catch {
         Write-Host "Error Cleaning: $_"
     } finally {
         Start-Sleep -Seconds 2
     }
 }
+
 
 
 # Clean log files
@@ -137,7 +143,6 @@ function ProcessFile {
             $ErrorCount++
         }
     }
-    Write-Host "Errors Cleaned: $ErrorCount"
     return [PSCustomObject]@{
         CleanedContent = $CleanedContent
         ErrorCount = $ErrorCount

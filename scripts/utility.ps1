@@ -19,7 +19,8 @@ function BackupFiles {
             $destination = Join-Path ".\Backup" $file.Name
             Copy-Item $file.FullName -Destination $destination -Force
         }
-        Write-Host "Backed up, $($files.Count) $FileType files"
+        Set-SilentConfigureDisplay
+		Write-Host "Backed Up: $($files.Count) $($FileType)s"
     } catch {
         Write-Host "Backup failed, $_"
     }
