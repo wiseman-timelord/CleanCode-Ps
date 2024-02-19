@@ -66,24 +66,31 @@ Backed Up: 3 Scripts
 Cleaning Scripts...
 
 Processing: display.ps1
-State: Blanks=6, Comments=4, Lines=70
-After: Blanks=6, Comments=4, Lines=70
-Total Reduction=0.00%
+State: Blanks=29, Comments=7, Lines=193
+After: Blanks=25, Comments=26, Lines=183
+Total Reduction=5.18%
 
 Bypassing Log: Errors-Crash.Log
 
+Processing: impexppsd1.ps1
+State: Blanks=6, Comments=25, Lines=82
+After: Blanks=18, Comments=19, Lines=70
+Total Reduction=14.63%
+
 Processing: main.ps1
 State: Blanks=8, Comments=7, Lines=46
-After: Blanks=8, Comments=7, Lines=46
-Total Reduction=0.00%
+After: Blanks=3, Comments=4, Lines=35
+Total Reduction=23.91%
 
 Processing: utility.ps1
-State: Blanks=24, Comments=10, Lines=193
-After: Blanks=24, Comments=10, Lines=193
-Total Reduction=0.00%
+State: Blanks=26, Comments=6, Lines=202
+After: Blanks=35, Comments=36, Lines=206
+Total Reduction=-1.98%
 
 ...Scripts Cleaned.
 
+------------------------------------------------------------------
+Returning To Menu...
 
 ```
 ##
