@@ -2,7 +2,8 @@
 
 ### Status
 Alpha. The conversion has been done and now it requires...
-- Its not actually cleaning the scripts.
+- Refine Interface so far.
+- Is it actually cleaning the scripts/logs? Is it doing so in compliance with the original scripts.
 - Further, Testing and bugfixing.
 - remaining work from ScriptClean...
 1) identification and processing of variables for `.Mq5` scripts.
