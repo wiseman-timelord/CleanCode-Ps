@@ -97,13 +97,15 @@ Un-Edited From ScriptClean...
 4. Check folder ".\Cleaned" after processes complete, backups are in ".\Backup".
 
 ### Requirements
-- Windows Environment with Scripting Host Enabled.
-- PowerShell or PowerShellCore, compatibility ranges to be calculated.
+- Windows Environment - Scripting Host "Enabled" and Batch support.
+- PowerShell or PowerShellCore - Compatibility ranges to be calculated.
+- .Net - Supposedly either 2/3.5/4/5/6/7/8 will work.
 
 ##
 
 ### Notes
 - This program was converted from the Python version of the program "ScriptClean", "ScriptClean" was the first "Ok" program by Wiseman-Timelord.
+- The program had to use .Net, because the `Copy-Item` cmdlet corrupts the color theme, even when "things were done".
 
 ##
 
