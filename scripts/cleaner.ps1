@@ -15,7 +15,7 @@ function CleanScriptFiles {
         }
         Write-Host "Cleaning Scripts...`n"
         foreach ($file in $scriptFiles) {
-            $global:FilePath_c2l = $file.FullName
+            $global:FilePathName_c2l = $file.FullName
             $scriptType = DetermineScriptType $file.Name
             if ($scriptType -eq 'Unknown') {
                 Write-Host "Bypassing Log: $($file.Name)`n"
@@ -50,8 +50,6 @@ function CleanScriptFiles {
         Start-Sleep -Seconds 3
     }
 }
-
-
 
 # Clean log files
 function CleanLogFiles {
@@ -142,19 +140,41 @@ function IsCommentLine {
 
 # Process file content
 function ProcessFile {
-    $Content = Get-Content -Path $global:FilePath_c2l
-    $ErrorCount = 0
-    $CleanedContent = @()
+    $ScriptType = $global:ScriptType_x6s
+    $FileName = [System.IO.Path]::GetFileName($global:FilePathName_c2l)
+    # Read and trim content lines immediately after reading
+    $Content = Get-Content -Path $global:FilePathName_c2l | ForEach-Object { $_.Trim() }
+
+    # Insert Script Name Comment at the top
+    $ProcessedContent = @("$($global:CommentMap_k6s[$ScriptType]) Script: $FileName")
+
+    # Prepare to detect sections and insert comments accordingly
+    $SectionRegexPatterns = @{}
+    foreach ($Section in $global:SectionMap_d8f[$ScriptType].Keys) {
+        $patterns = $global:SectionMap_d8f[$ScriptType][$Section] -join "|"
+        $SectionRegexPatterns[$Section] = $patterns
+    }
+
+    # Initialize a section tracking hashtable to keep track of inserted section comments
+    $InsertedSections = @{}
+
+    # Process each line, now working with already trimmed lines from $Content
     foreach ($Line in $Content) {
-        if (-not (IsCommentLine -Line $Line) -and $Line.Trim()) {
-            $CleanedContent += $Line.Trim()
+        # Skip blank lines and direct comments
+        if (-not $Line -or $Line.StartsWith($global:CommentMap_k6s[$ScriptType])) { continue }
+
+        # Check for section starts and insert comments accordingly
+        foreach ($Section in $SectionRegexPatterns.Keys) {
+            if ($Line -match $SectionRegexPatterns[$Section] -and -not $InsertedSections.ContainsKey($Section)) {
+                $CommentToAdd = "$($global:CommentMap_k6s[$ScriptType]) $Section".ToUpper()
+                $ProcessedContent += "", $CommentToAdd # Insert blank line and section comment
+                $InsertedSections[$Section] = $true # Mark this section as inserted
+            }
         }
-        if ($Line.Trim().StartsWith("Line")) {
-            $ErrorCount++
-        }
+
+        $ProcessedContent += $Line
     }
-    return [PSCustomObject]@{
-        CleanedContent = $CleanedContent
-        ErrorCount = $ErrorCount
-    }
+
+    # Write the processed content back to the original file
+    $ProcessedContent | Set-Content -Path $global:FilePathName_c2l
 }

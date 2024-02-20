@@ -42,7 +42,7 @@ function DetermineScriptType {
 
 # Stats calculation
 function Get-FileStats {
-    $global:CurrentContent_o4s = Get-Content $global:FilePath_c2l
+    $global:CurrentContent_o4s = Get-Content $global:FilePathName_c2l
     $stats = @{'Blanks' = 0; 'Comments' = 0; 'Total' = 0}
     foreach ($line in $global:CurrentContent_o4s) {
         $stats['Total']++
