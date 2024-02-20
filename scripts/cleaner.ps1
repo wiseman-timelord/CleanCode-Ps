@@ -100,28 +100,17 @@ function SanitizeContentBasedOnType {
         [string]$line
     )
     $scriptType = $global:ScriptType_x6s
-    switch ($scriptType) {
-        'Python' {
-            if ($line.Trim().StartsWith("#")) { return $null }
-            else { return $line.Trim() }
-        }
-        'PowerShell' {
-            if ($line.Trim().StartsWith("#")) { return $null }
-            else { return $line.Trim() }
-        }
-        'Batch' {
-            if ($line.Trim().StartsWith("REM") -or $line.Trim().StartsWith("::")) { return $null }
-            else { return $line.Trim() }
-        }
-        'MQL5' {
-            if ($line.Trim().StartsWith("//")) { return $null }
-            else { return $line.Trim() }
-        }
-        default {
-            return $line.Trim()
-        }
+    $commentSyntax = $global:CommentMap_k6s[$scriptType]
+
+    if ($scriptType -eq 'Batch' && ($line.Trim().StartsWith("REM") -or $line.Trim().StartsWith("::"))) {
+        return $null
+    } elseif ($line.Trim().StartsWith($commentSyntax)) {
+        return $null
+    } else {
+        return $line.Trim()
     }
 }
+
 
 # Comment check
 function IsCommentLine {
@@ -129,52 +118,37 @@ function IsCommentLine {
         [string]$Line
     )
     $ScriptType = $global:ScriptType_x6s
-    switch ($ScriptType) {
-        'Python' { return $Line.Trim().StartsWith("#") }
-        'PowerShell' { return $Line.Trim().StartsWith("#") }
-        'Batch' { return $Line.Trim().StartsWith("REM") -or $Line.Trim().StartsWith("::") }
-        'MQL5' { return $Line.Trim().StartsWith("//") }
-        default { return $false }
+    $commentSyntax = $global:CommentMap_k6s[$ScriptType]
+    if ($ScriptType -eq 'Batch') {
+        return $Line.Trim().StartsWith("REM") -or $Line.Trim().StartsWith("::")
+    } else {
+        return $Line.Trim().StartsWith($commentSyntax)
     }
 }
+
 
 # Process file content
 function ProcessFile {
     $ScriptType = $global:ScriptType_x6s
     $FileName = [System.IO.Path]::GetFileName($global:FilePathName_c2l)
-    # Read and trim content lines immediately after reading
     $Content = Get-Content -Path $global:FilePathName_c2l | ForEach-Object { $_.Trim() }
-
-    # Insert Script Name Comment at the top
     $ProcessedContent = @("$($global:CommentMap_k6s[$ScriptType]) Script: $FileName")
-
-    # Prepare to detect sections and insert comments accordingly
     $SectionRegexPatterns = @{}
     foreach ($Section in $global:SectionMap_d8f[$ScriptType].Keys) {
         $patterns = $global:SectionMap_d8f[$ScriptType][$Section] -join "|"
         $SectionRegexPatterns[$Section] = $patterns
     }
-
-    # Initialize a section tracking hashtable to keep track of inserted section comments
     $InsertedSections = @{}
-
-    # Process each line, now working with already trimmed lines from $Content
     foreach ($Line in $Content) {
-        # Skip blank lines and direct comments
         if (-not $Line -or $Line.StartsWith($global:CommentMap_k6s[$ScriptType])) { continue }
-
-        # Check for section starts and insert comments accordingly
         foreach ($Section in $SectionRegexPatterns.Keys) {
             if ($Line -match $SectionRegexPatterns[$Section] -and -not $InsertedSections.ContainsKey($Section)) {
                 $CommentToAdd = "$($global:CommentMap_k6s[$ScriptType]) $Section".ToUpper()
-                $ProcessedContent += "", $CommentToAdd # Insert blank line and section comment
-                $InsertedSections[$Section] = $true # Mark this section as inserted
+                $ProcessedContent += "", $CommentToAdd
+                $InsertedSections[$Section] = $true
             }
         }
-
         $ProcessedContent += $Line
     }
-
-    # Write the processed content back to the original file
     $ProcessedContent | Set-Content -Path $global:FilePathName_c2l
 }
